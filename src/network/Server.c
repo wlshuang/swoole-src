@@ -119,7 +119,7 @@ SWINLINE static int swConnection_close(swServer *serv, int fd, int16_t *from_id)
 		}
 	}
 	//重新设置max_fd,此代码为了遍历connection_list服务
-	if(fd == swServer_get_maxfd(serv))
+	if (fd == swServer_get_maxfd(serv))
 	{
 		int find_max_fd = fd - 1;
 		//找到第二大的max_fd作为新的max_fd
@@ -127,7 +127,6 @@ SWINLINE static int swConnection_close(swServer *serv, int fd, int16_t *from_id)
 		swServer_set_maxfd(serv, find_max_fd);
 		swTrace("set_maxfd=%d|close_fd=%d", find_max_fd, fd);
 	}
-	serv->connect_count--;
 	return SW_OK;
 }
 
@@ -281,7 +280,7 @@ static int swServer_master_onAccept(swReactor *reactor, swEvent *event)
 		}
 		swTrace("[Master]accept.event->fd=%d|event->from_id=%d|conn=%d", event->fd, event->from_id, conn_fd);
 		//连接过多
-		if(serv->connect_count >= serv->max_conn)
+		if (conn_fd >= serv->max_conn)
 		{
 			swWarn("too many connection");
 			close(conn_fd);
@@ -345,9 +344,7 @@ static int swServer_master_onAccept(swReactor *reactor, swEvent *event)
 		}
 		else
 		{
-			serv->connect_count++;
-
-			if(serv->onMasterConnect != NULL)
+			if (serv->onMasterConnect != NULL)
 			{
 				serv->onMasterConnect(serv, conn_fd, c_pti);
 			}
@@ -1277,13 +1274,12 @@ static int swServer_single_onClose(swReactor *reactor, swEvent *event)
 {
 	swServer *serv = reactor->ptr;
 
-	if(swConnection_close(serv, event->fd, &(event->from_id)) == 0)
+	if (swConnection_close(serv, event->fd, &(event->from_id)) == 0)
 	{
 		if(serv->onClose != NULL)
 		{
 			serv->onClose(serv, event->fd, event->from_id);
 		}
-		serv->connect_count--;
 	}
 	return SW_OK;
 }

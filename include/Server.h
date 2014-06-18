@@ -126,7 +126,6 @@ struct swServer_s
 	int worker_groupid;
 	int max_conn;
 
-	int connect_count; //连接计数
 	int max_request;
 	int timeout_sec;
 	int timeout_usec;
